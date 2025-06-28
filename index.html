@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Citation Generator – SIS/JNU, Chicago, APA, MLA</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Citation Generator</h1>
+    <div id="quote" class="quote-card">Loading academic quote...</div>
+    <h3>SIS/JNU, Chicago, APA, MLA</h3>
+    <div class="flex-grid">
+      <div class="col">
+        <label for="citationStyle">Citation Manual:</label>
+        <select id="citationStyle" onchange="updateForm();">
+          <option value="sis">SIS/JNU</option>
+          <option value="chicago">Chicago</option>
+          <option value="apa">APA</option>
+          <option value="mla">MLA</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="citationType">Citation Format:</label>
+        <select id="citationType">
+          <option value="reference">Reference List</option>
+          <option value="footnote">Footnote</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="sourceType">Source Type:</label>
+        <select id="sourceType" onchange="updateForm()">
+          <option value="book">Book</option>
+          <option value="book-isbn">Book (via ISBN)</option>
+          <option value="reprint">Book (Reprinted)</option>
+          <option value="multivol">Book (Multiple Volumes)</option>
+          <option value="journal">Journal Article</option>
+          <option value="journal-doi">Journal (via DOI)</option>
+          <option value="chapter">Chapter in Edited Volume</option>
+          <option value="newspaper">Newspaper/Magazine Article</option>
+          <option value="thesis">Thesis/Dissertation</option>
+          <option value="govt">Govt/IGO/NGO Report</option>
+          <option value="legal">Legal Case</option>
+          <option value="treaty">Treaty/UN Document</option>
+          <option value="indirect">Indirect/Quoted Source</option>
+          <option value="web">Internet Source</option>
+          <option value="lecture">Lecture/Speech</option>
+          <option value="personal">Interview/Letter/Email</option>
+        </select>
+      </div>
+      <div class="col col-full hidden" id="isbnFields">
+        <label>ISBN Number:</label>
+        <input type="text" id="isbn" placeholder="e.g. 9780140449136">
+        <button type="button" class="fetch-btn" onclick="fetchBookByISBN()">Fetch via ISBN</button>
+      </div>
+      <div class="col col-full hidden" id="doiFields">
+        <label>DOI:</label>
+        <input type="text" id="doi" placeholder="e.g. 10.1038/nphys1170">
+        <button type="button" class="fetch-btn" onclick="fetchJournalByDOI()">Fetch via DOI</button>
+      </div>
+    </div>
+    <div class="flex-grid">
+      <div class="col">
+        <label>Author's First Name(s):</label>
+        <input type="text" id="firstName" placeholder="e.g. John A." oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Author's Last Name:</label>
+        <input type="text" id="lastName" placeholder="e.g. Smith" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Year:</label>
+        <input type="text" id="year" placeholder="e.g. 2004">
+      </div>
+      <div class="col">
+        <label>Title of Work:</label>
+        <input type="text" id="title">
+      </div>
+      <div class="col hidden" id="pageFields">
+        <label>Page Number(s):</label>
+        <input type="text" id="pageNumber" placeholder="e.g. p. 8 or pp. 15-23">
+      </div>
+    </div>
+    <div class="flex-grid" id="bookFields">
+      <div class="col">
+        <label>Place of Publication:</label>
+        <input type="text" id="bookPlace" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Publisher:</label>
+        <input type="text" id="bookPublisher" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="reprintFields">
+      <div class="col">
+        <label>Original Publication Year:</label>
+        <input type="text" id="reprintYear">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="multivolFields">
+      <div class="col">
+        <label>Volume Info:</label>
+        <input type="text" id="volumeInfo" placeholder="Vol. I, Vol. II, etc.">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="journalFields">
+      <div class="col">
+        <label>Journal Name:</label>
+        <input type="text" id="journalName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Volume (issue):</label>
+        <input type="text" id="volumeIssue">
+      </div>
+      <div class="col">
+        <label>Article Pages:</label>
+        <input type="text" id="pages">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="chapterFields">
+      <div class="col">
+        <label>Editor(s):</label>
+        <input type="text" id="editors" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Book Title:</label>
+        <input type="text" id="bookTitle" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Place of Publication:</label>
+        <input type="text" id="chapterPlace" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Publisher:</label>
+        <input type="text" id="chapterPublisher" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="newspaperFields">
+      <div class="col">
+        <label>Newspaper Name:</label>
+        <input type="text" id="newspaperName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>City:</label>
+        <input type="text" id="city" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Date (e.g. 12 March 2023):</label>
+        <input type="text" id="newspaperDate">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="thesisFields">
+      <div class="col">
+        <label>Thesis Type (e.g., Ph.D. Thesis):</label>
+        <input type="text" id="thesisType">
+      </div>
+      <div class="col">
+        <label>Place:</label>
+        <input type="text" id="thesisPlace" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>University:</label>
+        <input type="text" id="thesisUniversity" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="govtFields">
+      <div class="col">
+        <label>Organisation Name:</label>
+        <input type="text" id="govtName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Report Title/Details:</label>
+        <input type="text" id="govtTitle">
+      </div>
+      <div class="col">
+        <label>Publication Details (number, etc):</label>
+        <input type="text" id="govtDetails">
+      </div>
+      <div class="col">
+        <label>Place:</label>
+        <input type="text" id="govtPlace" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="legalFields">
+      <div class="col">
+        <label>Case Title:</label>
+        <input type="text" id="caseTitle">
+      </div>
+      <div class="col">
+        <label>Volume Number/Report Service:</label>
+        <input type="text" id="caseReport">
+      </div>
+      <div class="col">
+        <label>Year:</label>
+        <input type="text" id="caseYear">
+      </div>
+      <div class="col">
+        <label>Court & Page/Para:</label>
+        <input type="text" id="caseCourt">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="treatyFields">
+      <div class="col">
+        <label>Title of Treaty/Document:</label>
+        <input type="text" id="treatyTitle">
+      </div>
+      <div class="col">
+        <label>Publication Details (Doc. No./Year):</label>
+        <input type="text" id="treatyDetails">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="indirectFields">
+      <div class="col">
+        <label>Original Source Full Reference:</label>
+        <textarea id="originalSource"></textarea>
+      </div>
+      <div class="col">
+        <label>Secondary Source Full Reference ("quoted in"/"cited in"):</label>
+        <textarea id="secondarySource"></textarea>
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="webFields">
+      <div class="col">
+        <label>Source (Organisation or Website Name):</label>
+        <input type="text" id="webSource" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Date Accessed:</label>
+        <input type="date" id="accessDate">
+      </div>
+      <div class="col">
+        <label>URL:</label>
+        <input type="text" id="url">
+      </div>
+      <div class="col">
+        <label>Anchor Text for Link (optional):</label>
+        <input type="text" id="linkText">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="lectureFields">
+      <div class="col">
+        <label>Speaker Name:</label>
+        <input type="text" id="speakerName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Title/Occasion:</label>
+        <input type="text" id="lectureTitle" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Date/Place:</label>
+        <input type="text" id="lectureDatePlace" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="personalFields">
+      <div class="col">
+        <label>Person Name:</label>
+        <input type="text" id="personName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Type (e-mail/interview/letter):</label>
+        <input type="text" id="personalType">
+      </div>
+      <div class="col">
+        <label>Date & Place:</label>
+        <input type="text" id="personalDatePlace">
+      </div>
+    </div>
+    <div class="button-group">
+      <button onclick="generateCitation()">Generate Citation</button>
+      <button onclick="copyToClipboard()">Copy</button>
+      <button onclick="saveAsWord()">Save as Word</button>
+    </div>
+    <div id="output"></div>
+  </div>
+<script>
+// (Paste your JavaScript code here — unchanged from your last version)
+function capitalizeWords(input) {
+  input.value = input.value.replace(/\b\w+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+function updateForm() {
+  const type = document.getElementById("sourceType").value;
+  const mode = document.getElementById("citationType").value;
+  const sections = [
+    "bookFields","reprintFields","multivolFields","journalFields","chapterFields","newspaperFields",
+    "thesisFields","govtFields","legalFields","treatyFields","indirectFields","webFields","lectureFields",
+    "personalFields","isbnFields","doiFields","pageFields"
+  ];
+  sections.forEach(id => document.getElementById(id)?.classList.add("hidden"));
+  // Show page number only for footnote and relevant types
+  if (
+    mode === "footnote" &&
+    ["book", "book-isbn", "reprint", "multivol", "journal", "journal-doi", "chapter", "newspaper"].includes(type)
+  ) {
+    document.getElementById("pageFields").classList.remove("hidden");
+  }
+  if(type==="book") document.getElementById("bookFields").classList.remove("hidden");
+  if(type==="book-isbn"){ document.getElementById("bookFields").classList.remove("hidden"); document.getElementById("isbnFields").classList.remove("hidden");}
+  if(type==="reprint"){ document.getElementById("bookFields").classList.remove("hidden"); document.getElementById("reprintFields").classList.remove("hidden");}
+  if(type==="multivol"){ document.getElementById("bookFields").classList.remove("hidden"); document.getElementById("multivolFields").classList.remove("hidden");}
+  if(type==="journal") document.getElementById("journalFields").classList.remove("hidden");
+  if(type==="journal-doi"){ document.getElementById("journalFields").classList.remove("hidden"); document.getElementById("doiFields").classList.remove("hidden");}
+  if(type==="chapter") document.getElementById("chapterFields").classList.remove("hidden");
+  if(type==="newspaper") document.getElementById("newspaperFields").classList.remove("hidden");
+  if(type==="thesis") document.getElementById("thesisFields").classList.remove("hidden");
+  if(type==="govt") document.getElementById("govtFields").classList.remove("hidden");
+  if(type==="legal") document.getElementById("legalFields").classList.remove("hidden");
+  if(type==="treaty") document.getElementById("treatyFields").classList.remove("hidden");
+  if(type==="indirect") document.getElementById("indirectFields").classList.remove("hidden");
+  if(type==="web") document.getElementById("webFields").classList.remove("hidden");
+  if(type==="lecture") document.getElementById("lectureFields").classList.remove("hidden");
+  if(type==="personal") document.getElementById("personalFields").classList.remove("hidden");
+}
+document.getElementById("citationType").addEventListener("change", updateForm);
+function escapeHTML(str) { return (str||'').replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+function formatDate(d) {
+  if(!d) return "";
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const [y,m,day] = d.split("-");
+  return `${parseInt(day)} ${months[parseInt(m)-1]}, ${y}`;
+}
+const citationFormatters = {/* ... same as your code above ... */};
+// (Copy and paste your citationFormatters object and all related functions here)
+function generateCitation() { /* ... */ }
+function copyToClipboard() { /* ... */ }
+async function saveAsWord() { /* ... */ }
+async function fetchBookByISBN() { /* ... */ }
+async function fetchJournalByDOI() { /* ... */ }
+updateForm();
+// Academic quote fetcher
+async function fetchQuote() {
+  const el = document.getElementById('quote');
+  try {
+    let resp = await fetch('https://zenquotes.io/api/today');
+    let quotes = await resp.json();
+    let q = quotes[0];
+    el.innerHTML = `“${q.q}” <span class="quote-author">– ${q.a}</span>`;
+  } catch {
+    el.innerHTML = "“The beautiful thing about learning is that no one can take it away from you.” <span class='quote-author'>– B.B. King</span>";
+  }
+}
+fetchQuote();
+</script>
+</body>
+</html>
