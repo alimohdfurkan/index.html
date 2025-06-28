@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Citation Generator – SIS/JNU, Chicago, APA, MLA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --accent: #2353c2;
+      --accent2: #e5eaff;
+      --bg: #f7f8fa;
+      --card: #fff;
+      --border: #e0e7ef;
+      --radius: 16px;
+      --shadow: 0 0 12px 2px #2353c210;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('mmaj.jpeg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2.2rem auto 2rem auto;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.2rem 2.3rem 2.2rem 2.3rem;
+      position: relative;
+      z-index: 2;
+    }
+    h1, h3 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: .4em;
+      margin-top: 0;
+    }
+    .quote-card {
+      background: var(--accent2);
+      border-radius: 13px;
+      margin: 1rem auto 1.5rem auto;
+      max-width: 600px;
+      padding: .7em 1em .9em 1em;
+      font-size: 1.07rem;
+      font-style: italic;
+      color: #234;
+      border: 1.5px solid #bfcce6;
+      box-shadow: 0 2px 8px #bfcce635;
+      min-height: 38px;
+      transition: background .2s;
+    }
+    .quote-author { display: block; text-align: right; margin-top: .7em; color: #3a4c7a; font-weight: bold; }
+    .flex-grid {
+      display: flex; flex-wrap: wrap; gap: 1rem 3%; margin: .7rem 0 0 0;
+    }
+    .col {
+      flex: 1 1 46%;
+      min-width: 220px;
+      margin-bottom: .2rem;
+    }
+    .col-full { flex: 1 1 100%; }
+    label {
+      font-weight: 600;
+      color: #234;
+      font-size: .98em;
+      margin-bottom: .18em;
+      display: block;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: .46rem .7rem;
+      margin-bottom: 0.25rem;
+      border: 1.1px solid var(--border);
+      border-radius: 7px;
+      box-sizing: border-box;
+      font-size: .99em;
+      background: #f8fafc;
+      transition: border .2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      background: #fff;
+      outline: none;
+    }
+    textarea { resize: vertical; min-height: 40px;}
+    .hidden { display: none !important; }
+    .button-group {
+      display: flex;
+      gap: 2.5%;
+      margin-top: 1em;
+      justify-content: center;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: .73rem 1.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.01em;
+      margin: 0 .1em;
+      box-shadow: 0 2px 4px #b6c1df40;
+      font-weight: 600;
+      letter-spacing: .01em;
+      transition: background 0.23s, box-shadow .15s;
+    }
+    button:hover {
+      background: #1a2d69;
+      box-shadow: 0 4px 14px #002a5440;
+    }
+    #output {
+      background: #f5f7fa;
+      padding: 1rem 1.1rem;
+      margin-top: 1.4rem;
+      border-left: 4px solid var(--accent);
+      font-size: 1.11rem;
+      border-radius: 8px;
+      min-height: 36px;
+      white-space: pre-wrap;
+      margin-bottom: 0.8em;
+    }
+    .fetch-btn {
+      margin-bottom: .8rem;
+      background: #1786ac;
+      width: auto;
+      font-size: .95rem;
+      padding: .5rem 1rem;
+      float: right;
+    }
+    .fetch-btn:hover { background: #115370;}
+    @media (max-width:700px) {
+      .container { padding: .8em .5em 1.3em .5em; }
+      .flex-grid { flex-direction: column; gap: .2rem 0; }
+      .col, .col-full { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Citation Generator</h1>
+    <div id="quote" class="quote-card">Loading academic quote...</div>
+    <h3>SIS/JNU, Chicago, APA, MLA</h3>
+    <div class="flex-grid">
+      <div class="col">
+        <label for="citationStyle">Citation Manual:</label>
+        <select id="citationStyle" onchange="updateForm();">
+          <option value="sis">SIS/JNU</option>
+          <option value="chicago">Chicago</option>
+          <option value="apa">APA</option>
+          <option value="mla">MLA</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="citationType">Citation Format:</label>
+        <select id="citationType">
+          <option value="reference">Reference List</option>
+          <option value="footnote">Footnote</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="sourceType">Source Type:</label>
+        <select id="sourceType" onchange="updateForm()">
+          <option value="book">Book</option>
+          <option value="book-isbn">Book (via ISBN)</option>
+          <option value="reprint">Book (Reprinted)</option>
+          <option value="multivol">Book (Multiple Volumes)</option>
+          <option value="journal">Journal Article</option>
+          <option value="journal-doi">Journal (via DOI)</option>
+          <option value="chapter">Chapter in Edited Volume</option>
+          <option value="newspaper">Newspaper/Magazine Article</option>
+          <option value="thesis">Thesis/Dissertation</option>
+          <option value="govt">Govt/IGO/NGO Report</option>
+          <option value="legal">Legal Case</option>
+          <option value="treaty">Treaty/UN Document</option>
+          <option value="indirect">Indirect/Quoted Source</option>
+          <option value="web">Internet Source</option>
+          <option value="lecture">Lecture/Speech</option>
+          <option value="personal">Interview/Letter/Email</option>
+        </select>
+      </div>
+      <div class="col col-full hidden" id="isbnFields">
+        <label>ISBN Number:</label>
+        <input type="text" id="isbn" placeholder="e.g. 9780140449136">
+        <button type="button" class="fetch-btn" onclick="fetchBookByISBN()">Fetch via ISBN</button>
+      </div>
+      <div class="col col-full hidden" id="doiFields">
+        <label>DOI:</label>
+        <input type="text" id="doi" placeholder="e.g. 10.1038/nphys1170">
+        <button type="button" class="fetch-btn" onclick="fetchJournalByDOI()">Fetch via DOI</button>
+      </div>
+    </div>
+
+    <div class="flex-grid">
+      <div class="col">
+        <label>Author's First Name(s):</label>
+        <input type="text" id="firstName" placeholder="e.g. John A." oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Author's Last Name:</label>
+        <input type="text" id="lastName" placeholder="e.g. Smith" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Year:</label>
+        <input type="text" id="year" placeholder="e.g. 2004">
+      </div>
+      <div class="col">
+        <label>Title of Work:</label>
+        <input type="text" id="title">
+      </div>
+      <div class="col hidden" id="pageFields">
+        <label>Page Number(s):</label>
+        <input type="text" id="pageNumber" placeholder="e.g. p. 8 or pp. 15-23">
+      </div>
+    </div>
+
+    <div class="flex-grid" id="bookFields">
+      <div class="col">
+        <label>Place of Publication:</label>
+        <input type="text" id="bookPlace" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Publisher:</label>
+        <input type="text" id="bookPublisher" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="reprintFields">
+      <div class="col">
+        <label>Original Publication Year:</label>
+        <input type="text" id="reprintYear">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="multivolFields">
+      <div class="col">
+        <label>Volume Info:</label>
+        <input type="text" id="volumeInfo" placeholder="Vol. I, Vol. II, etc.">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="journalFields">
+      <div class="col">
+        <label>Journal Name:</label>
+        <input type="text" id="journalName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Volume (issue):</label>
+        <input type="text" id="volumeIssue">
+      </div>
+      <div class="col">
+        <label>Article Pages:</label>
+        <input type="text" id="pages">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="chapterFields">
+      <div class="col">
+        <label>Editor(s):</label>
+        <input type="text" id="editors" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Book Title:</label>
+        <input type="text" id="bookTitle" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Place of Publication:</label>
+        <input type="text" id="chapterPlace" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Publisher:</label>
+        <input type="text" id="chapterPublisher" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="newspaperFields">
+      <div class="col">
+        <label>Newspaper Name:</label>
+        <input type="text" id="newspaperName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>City:</label>
+        <input type="text" id="city" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Date (e.g. 12 March 2023):</label>
+        <input type="text" id="newspaperDate">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="thesisFields">
+      <div class="col">
+        <label>Thesis Type (e.g., Ph.D. Thesis):</label>
+        <input type="text" id="thesisType">
+      </div>
+      <div class="col">
+        <label>Place:</label>
+        <input type="text" id="thesisPlace" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>University:</label>
+        <input type="text" id="thesisUniversity" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="govtFields">
+      <div class="col">
+        <label>Organisation Name:</label>
+        <input type="text" id="govtName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Report Title/Details:</label>
+        <input type="text" id="govtTitle">
+      </div>
+      <div class="col">
+        <label>Publication Details (number, etc):</label>
+        <input type="text" id="govtDetails">
+      </div>
+      <div class="col">
+        <label>Place:</label>
+        <input type="text" id="govtPlace" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="legalFields">
+      <div class="col">
+        <label>Case Title:</label>
+        <input type="text" id="caseTitle">
+      </div>
+      <div class="col">
+        <label>Volume Number/Report Service:</label>
+        <input type="text" id="caseReport">
+      </div>
+      <div class="col">
+        <label>Year:</label>
+        <input type="text" id="caseYear">
+      </div>
+      <div class="col">
+        <label>Court & Page/Para:</label>
+        <input type="text" id="caseCourt">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="treatyFields">
+      <div class="col">
+        <label>Title of Treaty/Document:</label>
+        <input type="text" id="treatyTitle">
+      </div>
+      <div class="col">
+        <label>Publication Details (Doc. No./Year):</label>
+        <input type="text" id="treatyDetails">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="indirectFields">
+      <div class="col">
+        <label>Original Source Full Reference:</label>
+        <textarea id="originalSource"></textarea>
+      </div>
+      <div class="col">
+        <label>Secondary Source Full Reference ("quoted in"/"cited in"):</label>
+        <textarea id="secondarySource"></textarea>
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="webFields">
+      <div class="col">
+        <label>Source (Organisation or Website Name):</label>
+        <input type="text" id="webSource" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Date Accessed:</label>
+        <input type="date" id="accessDate">
+      </div>
+      <div class="col">
+        <label>URL:</label>
+        <input type="text" id="url">
+      </div>
+      <div class="col">
+        <label>Anchor Text for Link (optional):</label>
+        <input type="text" id="linkText">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="lectureFields">
+      <div class="col">
+        <label>Speaker Name:</label>
+        <input type="text" id="speakerName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Title/Occasion:</label>
+        <input type="text" id="lectureTitle" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Date/Place:</label>
+        <input type="text" id="lectureDatePlace" oninput="capitalizeWords(this)">
+      </div>
+    </div>
+    <div class="flex-grid hidden" id="personalFields">
+      <div class="col">
+        <label>Person Name:</label>
+        <input type="text" id="personName" oninput="capitalizeWords(this)">
+      </div>
+      <div class="col">
+        <label>Type (e-mail/interview/letter):</label>
+        <input type="text" id="personalType">
+      </div>
+      <div class="col">
+        <label>Date & Place:</label>
+        <input type="text" id="personalDatePlace">
+      </div>
+    </div>
+    <div class="button-group">
+      <button onclick="generateCitation()">Generate Citation</button>
+      <button onclick="copyToClipboard()">Copy</button>
+      <button onclick="saveAsWord()">Save as Word</button>
+    </div>
+    <div id="output"></div>
+  </div>
+<script>
+function capitalizeWords(input) {
+  input.value = input.value.replace(/\b\w+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+function updateForm() {
+  const type = document.getElementById("sourceType").value;
+  const mode = document.getElementById("citationType").value;
+  const sections = [
+    "bookFields","reprintFields","multivolFields","journalFields","chapterFields","newspaperFields",
+    "thesisFields","govtFields","legalFields","treatyFields","indirectFields","webFields","lectureFields",
+    "personalFields","isbnFields","doiFields","pageFields"
+  ];
+  sections.forEach(id => document.getElementById(id)?.classList.add("hidden"));
+  // Show page number only for footnote and relevant types
+  if (
+    mode === "footnote" &&
+    ["book", "book-isbn", "reprint", "multivol", "journal", "journal-doi", "chapter", "newspaper"].includes(type)
+  ) {
+    document.getElementById("pageFields").classList.remove("hidden");
+  }
+  if(type==="book") document.getElementById("bookFields").classList.remove("hidden");
+  if(type==="book-isbn"){ document.getElementById("bookFields").classList.remove("hidden"); document.getElementById("isbnFields").classList.remove("hidden");}
+  if(type==="reprint"){ document.getElementById("bookFields").classList.remove("hidden"); document.getElementById("reprintFields").classList.remove("hidden");}
+  if(type==="multivol"){ document.getElementById("bookFields").classList.remove("hidden"); document.getElementById("multivolFields").classList.remove("hidden");}
+  if(type==="journal") document.getElementById("journalFields").classList.remove("hidden");
+  if(type==="journal-doi"){ document.getElementById("journalFields").classList.remove("hidden"); document.getElementById("doiFields").classList.remove("hidden");}
+  if(type==="chapter") document.getElementById("chapterFields").classList.remove("hidden");
+  if(type==="newspaper") document.getElementById("newspaperFields").classList.remove("hidden");
+  if(type==="thesis") document.getElementById("thesisFields").classList.remove("hidden");
+  if(type==="govt") document.getElementById("govtFields").classList.remove("hidden");
+  if(type==="legal") document.getElementById("legalFields").classList.remove("hidden");
+  if(type==="treaty") document.getElementById("treatyFields").classList.remove("hidden");
+  if(type==="indirect") document.getElementById("indirectFields").classList.remove("hidden");
+  if(type==="web") document.getElementById("webFields").classList.remove("hidden");
+  if(type==="lecture") document.getElementById("lectureFields").classList.remove("hidden");
+  if(type==="personal") document.getElementById("personalFields").classList.remove("hidden");
+}
+document.getElementById("citationType").addEventListener("change", updateForm);
+function escapeHTML(str) { return (str||'').replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+function formatDate(d) {
+  if(!d) return "";
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const [y,m,day] = d.split("-");
+  return `${parseInt(day)} ${months[parseInt(m)-1]}, ${y}`;
+}
+const citationFormatters = {
+  sis: {
+    book: (f,l,y,t,place,pub,pn) => `${l}, ${f} (${y}), <i>${t}</i>, ${place}: ${pub}${pn?`, ${pn}`:""}.`,
+    reprint: (f,l,y,t,place,pub,ryear,pn) => `${l}, ${f} (${y}), <i>${t}</i>, ${place}: ${pub}, reprinted ${ryear}${pn?`, ${pn}`:""}.`,
+    multivol: (f,l,y,t,place,pub,vol,pn) => `${l}, ${f} (${y}), <i>${t}</i>, ${vol}, ${place}: ${pub}${pn?`, ${pn}`:""}.`,
+    journal: (f,l,y,t,journal,vol,pages,doi,pn) => `${l}, ${f} (${y}), “${t}”, <i>${journal}</i>, ${vol}: ${pages}${pn?`, ${pn}`:""}${doi?', DOI: '+doi:''}.`,
+    chapter: (f,l,y,t,eds,btitle,place,pub,pn) => `${l}, ${f} (${y}), “${t}”, in ${eds} (eds.) <i>${btitle}</i>, ${place}: ${pub}${pn?`, ${pn}`:""}.`,
+    newspaper: (f,l,y,t,paper,city,date,pn) => `${l}, ${f} (${y}), “${t}”, ${paper}, ${city}, ${date}${pn?`, ${pn}`:""}.`,
+    thesis: (f,l,y,t,ttype,place,uni) => `${l}, ${f} (${y}), <i>${t}</i>, ${ttype}, ${place}: ${uni}.`,
+    govt: (org,y,title,details,place) => `${org} (${y}), ${title}${details?', '+details:''}, ${place}.`,
+    legal: (ctitle,report,cyear,court) => `${ctitle}, ${report}, ${cyear}, ${court}.`,
+    treaty: (ttitle,details) => `${ttitle}, ${details}.`,
+    indirect: (orig,sec) => `${orig} Quoted in ${sec}`,
+    web: (f,l,y,t,source,access,url,text) => `${l}, ${f} (${y}), “${t}”, ${source}, [Online: web] Accessed ${access}, URL: <a href="${url}" target="_blank">${text||url}</a>.`,
+    lecture: (speaker,title,dateplace) => `${speaker} (${dateplace}), “${title}”, Lecture.`,
+    personal: (pname,ptype,pdate) => `${pname} (${pdate}), ${ptype}.`
+  },
+  chicago: {
+    book: (f,l,y,t,place,pub,pn) => `${l}, ${f}. <i>${t}</i>. ${place}: ${pub}, ${y}${pn?`, ${pn}`:""}.`,
+    reprint: (f,l,y,t,place,pub,ryear,pn) => `${l}, ${f}. <i>${t}</i>. ${place}: ${pub}, ${y}. Reprint, ${ryear}${pn?`, ${pn}`:""}.`,
+    multivol: (f,l,y,t,place,pub,vol,pn) => `${l}, ${f}. <i>${t}</i>. ${vol}. ${place}: ${pub}, ${y}${pn?`, ${pn}`:""}.`,
+    journal: (f,l,y,t,journal,vol,pages,doi,pn) => `${l}, ${f}. "${t}." <i>${journal}</i> ${vol} (${y}): ${pages}${pn?`, ${pn}`:""}${doi?'. https://doi.org/'+doi:''}.`,
+    chapter: (f,l,y,t,eds,btitle,place,pub,pn) => `${l}, ${f}. "${t}." In ${btitle}, edited by ${eds}, ${place}: ${pub}, ${y}${pn?`, ${pn}`:""}.`,
+    newspaper: (f,l,y,t,paper,city,date,pn) => `${l}, ${f}. "${t}." ${paper}, ${city}, ${date}${pn?`, ${pn}`:""}.`,
+    thesis: (f,l,y,t,ttype,place,uni) => `${l}, ${f}. <i>${t}</i>. ${ttype}, ${uni}, ${y}.`,
+    govt: (org,y,title,details,place) => `${org}. ${title}. ${details?details+', ':''}${place}, ${y}.`,
+    legal: (ctitle,report,cyear,court) => `${ctitle}, ${report} (${cyear}), ${court}.`,
+    treaty: (ttitle,details) => `${ttitle}. ${details}.`,
+    indirect: (orig,sec) => `${orig} Quoted in ${sec}`,
+    web: (f,l,y,t,source,access,url,text) => `${l}, ${f}. "${t}." ${source}. Accessed ${access}. <a href="${url}" target="_blank">${text||url}</a>.`,
+    lecture: (speaker,title,dateplace) => `${speaker}. "${title}." Lecture, ${dateplace}.`,
+    personal: (pname,ptype,pdate) => `${pname}, ${ptype}, ${pdate}.`
+  },
+  apa: {
+    book: (f,l,y,t,place,pub,pn) => `${l}, ${f}. (${y}). <i>${t}</i>. ${place}: ${pub}${pn?`, ${pn}`:""}.`,
+    reprint: (f,l,y,t,place,pub,ryear,pn) => `${l}, ${f}. (${y}). <i>${t}</i>. ${place}: ${pub}. (Reprinted ${ryear})${pn?`, ${pn}`:""}.`,
+    multivol: (f,l,y,t,place,pub,vol,pn) => `${l}, ${f}. (${y}). <i>${t}</i> (${vol}). ${place}: ${pub}${pn?`, ${pn}`:""}.`,
+    journal: (f,l,y,t,journal,vol,pages,doi,pn) => `${l}, ${f}. (${y}). ${t}. <i>${journal}</i>, ${vol}, ${pages}${pn?`, ${pn}`:""}${doi?'. https://doi.org/'+doi:''}.`,
+    chapter: (f,l,y,t,eds,btitle,place,pub,pn) => `${l}, ${f}. (${y}). ${t}. In ${eds} (Eds.), <i>${btitle}</i> (${place}: ${pub})${pn?`, ${pn}`:""}.`,
+    newspaper: (f,l,y,t,paper,city,date,pn) => `${l}, ${f}. (${y}). ${t}. ${paper}, ${city}, ${date}${pn?`, ${pn}`:""}.`,
+    thesis: (f,l,y,t,ttype,place,uni) => `${l}, ${f}. (${y}). <i>${t}</i>. (${ttype}). ${uni}, ${place}.`,
+    govt: (org,y,title,details,place) => `${org}. (${y}). ${title}. ${details?details+', ':''}${place}.`,
+    legal: (ctitle,report,cyear,court) => `${ctitle}. (${cyear}). ${report}, ${court}.`,
+    treaty: (ttitle,details) => `${ttitle}. ${details}.`,
+    indirect: (orig,sec) => `${orig} Quoted in ${sec}`,
+    web: (f,l,y,t,source,access,url,text) => `${l}, ${f}. (${y}). ${t}. ${source}. Retrieved ${access}, from <a href="${url}" target="_blank">${text||url}</a>.`,
+    lecture: (speaker,title,dateplace) => `${speaker}. (${dateplace}). ${title}. Lecture.`,
+    personal: (pname,ptype,pdate) => `${pname} (${pdate}), ${ptype}.`
+  },
+  mla: {
+    book: (f,l,y,t,place,pub,pn) => `${l}, ${f}. <i>${t}</i>. ${place}: ${pub}, ${y}${pn?`, ${pn}`:""}.`,
+    reprint: (f,l,y,t,place,pub,ryear,pn) => `${l}, ${f}. <i>${t}</i>. ${place}: ${pub}, ${y}. Reprinted ${ryear}${pn?`, ${pn}`:""}.`,
+    multivol: (f,l,y,t,place,pub,vol,pn) => `${l}, ${f}. <i>${t}</i>. ${vol}. ${place}: ${pub}, ${y}${pn?`, ${pn}`:""}.`,
+    journal: (f,l,y,t,journal,vol,pages,doi,pn) => `${l}, ${f}. "${t}." <i>${journal}</i>, vol. ${vol}, ${y}, pp. ${pages}${pn?`, ${pn}`:""}${doi?', doi:'+doi:''}.`,
+    chapter: (f,l,y,t,eds,btitle,place,pub,pn) => `${l}, ${f}. "${t}." <i>${btitle}</i>, edited by ${eds}, ${place}: ${pub}, ${y}${pn?`, ${pn}`:""}.`,
+    newspaper: (f,l,y,t,paper,city,date,pn) => `${l}, ${f}. "${t}." ${paper}, ${city}, ${date}${pn?`, ${pn}`:""}.`,
+    thesis: (f,l,y,t,ttype,place,uni) => `${l}, ${f}. <i>${t}</i>. ${ttype}, ${uni}, ${y}.`,
+    govt: (org,y,title,details,place) => `${org}. ${title}. ${details?details+', ':''}${place}, ${y}.`,
+    legal: (ctitle,report,cyear,court) => `${ctitle}, ${report}, ${cyear}, ${court}.`,
+    treaty: (ttitle,details) => `${ttitle}. ${details}.`,
+    indirect: (orig,sec) => `${orig} Quoted in ${sec}`,
+    web: (f,l,y,t,source,access,url,text) => `${l}, ${f}. "${t}." ${source}, ${y}, <a href="${url}" target="_blank">${text||url}</a>. Accessed ${access}.`,
+    lecture: (speaker,title,dateplace) => `${speaker}. "${title}." Lecture, ${dateplace}.`,
+    personal: (pname,ptype,pdate) => `${pname}, ${ptype}, ${pdate}.`
+  }
+};
+function generateCitation() {
+  const manual = document.getElementById("citationStyle").value;
+  const type = document.getElementById("sourceType").value;
+  const mode = document.getElementById("citationType").value;
+  const f = escapeHTML(document.getElementById("firstName").value.trim());
+  const l = escapeHTML(document.getElementById("lastName").value.trim());
+  const y = escapeHTML(document.getElementById("year").value.trim());
+  const t = escapeHTML(document.getElementById("title").value.trim());
+  let pn = "";
+  if (
+    mode === "footnote" &&
+    ["book", "book-isbn", "reprint", "multivol", "journal", "journal-doi", "chapter", "newspaper"].includes(type)
+  ) {
+    pn = escapeHTML(document.getElementById("pageNumber") ? document.getElementById("pageNumber").value.trim() : "");
+  }
+  let c = "";
+  try {
+    if (type==="book" || type==="book-isbn") {
+      const place = escapeHTML(document.getElementById("bookPlace").value.trim());
+      const pub = escapeHTML(document.getElementById("bookPublisher").value.trim());
+      c = citationFormatters[manual].book(f,l,y,t,place,pub,mode==="footnote"?pn:"");
+    } else if (type==="reprint") {
+      const place = escapeHTML(document.getElementById("bookPlace").value.trim());
+      const pub = escapeHTML(document.getElementById("bookPublisher").value.trim());
+      const ryear = escapeHTML(document.getElementById("reprintYear").value.trim());
+      c = citationFormatters[manual].reprint(f,l,y,t,place,pub,ryear,mode==="footnote"?pn:"");
+    } else if (type==="multivol") {
+      const place = escapeHTML(document.getElementById("bookPlace").value.trim());
+      const pub = escapeHTML(document.getElementById("bookPublisher").value.trim());
+      const vol = escapeHTML(document.getElementById("volumeInfo").value.trim());
+      c = citationFormatters[manual].multivol(f,l,y,t,place,pub,vol,mode==="footnote"?pn:"");
+    } else if (type==="journal" || type==="journal-doi") {
+      const journal = escapeHTML(document.getElementById("journalName").value.trim());
+      const vol = escapeHTML(document.getElementById("volumeIssue").value.trim());
+      const pages = escapeHTML(document.getElementById("pages").value.trim());
+      let doi = '';
+      if(type==="journal-doi") doi = escapeHTML(document.getElementById("doi").value.trim());
+      c = citationFormatters[manual].journal(f,l,y,t,journal,vol,pages,doi,mode==="footnote"?pn:"");
+    } else if (type==="chapter") {
+      const eds = escapeHTML(document.getElementById("editors").value.trim());
+      const btitle = escapeHTML(document.getElementById("bookTitle").value.trim());
+      const place = escapeHTML(document.getElementById("chapterPlace").value.trim());
+      const pub = escapeHTML(document.getElementById("chapterPublisher").value.trim());
+      c = citationFormatters[manual].chapter(f,l,y,t,eds,btitle,place,pub,mode==="footnote"?pn:"");
+    } else if (type==="newspaper") {
+      const paper = escapeHTML(document.getElementById("newspaperName").value.trim());
+      const city = escapeHTML(document.getElementById("city").value.trim());
+      const date = escapeHTML(document.getElementById("newspaperDate").value.trim());
+      c = citationFormatters[manual].newspaper(f,l,y,t,paper,city,date,mode==="footnote"?pn:"");
+    } else if (type==="thesis") {
+      const ttype = escapeHTML(document.getElementById("thesisType").value.trim());
+      const place = escapeHTML(document.getElementById("thesisPlace").value.trim());
+      const uni = escapeHTML(document.getElementById("thesisUniversity").value.trim());
+      c = citationFormatters[manual].thesis(f,l,y,t,ttype,place,uni);
+    } else if (type==="govt") {
+      const org = escapeHTML(document.getElementById("govtName").value.trim());
+      const title = escapeHTML(document.getElementById("govtTitle").value.trim());
+      const details = escapeHTML(document.getElementById("govtDetails").value.trim());
+      const place = escapeHTML(document.getElementById("govtPlace").value.trim());
+      c = citationFormatters[manual].govt(org,y,title,details,place);
+    } else if (type==="legal") {
+      const ctitle = escapeHTML(document.getElementById("caseTitle").value.trim());
+      const report = escapeHTML(document.getElementById("caseReport").value.trim());
+      const cyear = escapeHTML(document.getElementById("caseYear").value.trim());
+      const court = escapeHTML(document.getElementById("caseCourt").value.trim());
+      c = citationFormatters[manual].legal(ctitle,report,cyear,court);
+    } else if (type==="treaty") {
+      const ttitle = escapeHTML(document.getElementById("treatyTitle").value.trim());
+      const details = escapeHTML(document.getElementById("treatyDetails").value.trim());
+      c = citationFormatters[manual].treaty(ttitle,details);
+    } else if (type==="indirect") {
+      const orig = escapeHTML(document.getElementById("originalSource").value.trim());
+      const sec = escapeHTML(document.getElementById("secondarySource").value.trim());
+      c = citationFormatters[manual].indirect(orig,sec);
+    } else if (type==="web") {
+      const source = escapeHTML(document.getElementById("webSource").value.trim());
+      const accessRaw = document.getElementById("accessDate").value.trim();
+      const access = formatDate(accessRaw);
+      const url = escapeHTML(document.getElementById("url").value.trim());
+      const text = escapeHTML(document.getElementById("linkText").value.trim());
+      c = citationFormatters[manual].web(f,l,y,t,source,access,url,text);
+    } else if (type==="lecture") {
+      const speaker = escapeHTML(document.getElementById("speakerName").value.trim());
+      const title2 = escapeHTML(document.getElementById("lectureTitle").value.trim());
+      const dateplace = escapeHTML(document.getElementById("lectureDatePlace").value.trim());
+      c = citationFormatters[manual].lecture(speaker,title2,dateplace);
+    } else if (type==="personal") {
+      const pname = escapeHTML(document.getElementById("personName").value.trim());
+      const ptype = escapeHTML(document.getElementById("personalType").value.trim());
+      const pdate = escapeHTML(document.getElementById("personalDatePlace").value.trim());
+      c = citationFormatters[manual].personal(pname,ptype,pdate);
+    }
+    // Footnote (short) mode
+    if (mode==="footnote") {
+      c = l ? `${l}, <i>${t}</i>, ${y}${pn?`, ${pn}`:""}.` : c;
+    }
+  } catch(e){ c="Not implemented or missing fields."; }
+  document.getElementById("output").innerHTML = c;
+}
+function copyToClipboard() {
+  const el = document.createElement('textarea');
+  el.value = document.getElementById("output").innerText;
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+  alert("Citation copied to clipboard!");
+}
+async function saveAsWord() {
+  const { Document, Packer, Paragraph, TextRun } = window.docx;
+  let citation = document.getElementById("output").innerText.trim();
+  if (!citation) { alert("Please generate a citation first."); return; }
+  const doc = new Document({
+    sections: [{
+      properties: {},
+      children: [
+        new Paragraph({
+          children: [new TextRun({ text: citation.replace(/<[^>]+>/g,''), font: "Times New Roman", size: 24 })]
+        })
+      ]
+    }]
+  });
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, "citation.docx");
+}
+async function fetchBookByISBN() {
+  let isbn = document.getElementById("isbn").value.replace(/[-\s]/g, "");
+  if (!isbn) { alert("Enter ISBN number"); return; }
+  let url = `https://openlibrary.org/isbn/${isbn}.json`;
+  try {
+    let r = await fetch(url);
+    if (!r.ok) throw new Error();
+    let data = await r.json();
+    document.getElementById("title").value = data.title || "";
+    document.getElementById("year").value = data.publish_date ? (data.publish_date.match(/\d{4}/) || [""])[0] : "";
+    document.getElementById("bookPublisher").value = (data.publishers && data.publishers[0]) || "";
+    document.getElementById("bookPlace").value = (data.publish_places && data.publish_places[0]) || "";
+    if (data.authors && data.authors.length > 0) {
+      let authUrl = `https://openlibrary.org${data.authors[0].key}.json`;
+      let r2 = await fetch(authUrl); let a = await r2.json();
+      let nameParts = (a.name || "").split(" ");
+      document.getElementById("firstName").value = nameParts.slice(1).join(" ");
+      document.getElementById("lastName").value = nameParts[0];
+    }
+  } catch {
+    alert("No details found. Please fill manually.");
+  }
+}
+async function fetchJournalByDOI() {
+  let doi = document.getElementById("doi").value.trim();
+  if (!doi) { alert("Enter DOI"); return; }
+  let url = `https://api.crossref.org/works/${encodeURIComponent(doi)}`;
+  try {
+    let r = await fetch(url);
+    if (!r.ok) throw new Error();
+    let { message: data } = await r.json();
+    if (data.author && data.author[0]) {
+      document.getElementById("firstName").value = data.author[0].given || "";
+      document.getElementById("lastName").value = data.author[0].family || "";
+    }
+    document.getElementById("title").value = Array.isArray(data.title) ? data.title[0] : (data.title || "");
+    document.getElementById("journalName").value = Array.isArray(data['container-title']) ? data['container-title'][0] : (data['container-title'] || "");
+    document.getElementById("volumeIssue").value = (data.volume || "") + (data.issue ? `(${data.issue})` : "");
+    document.getElementById("year").value = (data.issued && data.issued['date-parts'] && data.issued['date-parts'][0][0]) || "";
+    document.getElementById("pages").value = data.page || "";
+  } catch {
+    alert("DOI not found or data incomplete. Please fill manually.");
+  }
+}
+updateForm();
+// Fetch random quote from zenquotes (daily)
+async function fetchQuote() {
+  const el = document.getElementById('quote');
+  try {
+    // Daily quote endpoint for uniqueness
+    let resp = await fetch('https://zenquotes.io/api/today');
+    let quotes = await resp.json();
+    let q = quotes[0];
+    el.innerHTML = `“${q.q}” <span class="quote-author">– ${q.a}</span>`;
+  } catch {
+    el.innerHTML = "“The beautiful thing about learning is that no one can take it away from you.” <span class='quote-author'>– B.B. King</span>";
+  }
+}
+fetchQuote();
+</script>
+</body>
+</html>
