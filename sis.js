@@ -413,3 +413,32 @@ window.fetchNewsMeta = async function () {
     alert("Could not fetch news info. Fill manually.");
   }
 };
+window.fetchBookByISBN = async function () {
+  let isbn = document.getElementById("isbn").value.replace(/[-\s]/g, "");
+  if (!isbn) { alert("Enter ISBN number"); return; }
+  let url = `https://openlibrary.org/isbn/${isbn}.json`;
+  try {
+    let r = await fetch(url);
+    if (!r.ok) throw new Error();
+    let data = await r.json();
+    document.getElementById("title").value = data.title || "";
+    document.getElementById("year").value = data.publish_date ? (data.publish_date.match(/\d{4}/) || [""])[0] : "";
+    document.getElementById("bookPublisher").value = (data.publishers && data.publishers[0]) || "";
+    document.getElementById("bookPlace").value = (data.publish_places && data.publish_places[0]) || "";
+    if (data.authors && data.authors.length > 0) {
+      let authUrl = `https://openlibrary.org${data.authors[0].key}.json`;
+      let r2 = await fetch(authUrl); let a = await r2.json();
+      let nameParts = (a.name || "").trim().split(/\s+/);
+      if (nameParts.length > 1) {
+        document.getElementById("firstName").value = nameParts.slice(0, -1).join(" ");
+        document.getElementById("lastName").value = nameParts.slice(-1)[0];
+      } else {
+        document.getElementById("firstName").value = a.name || "";
+        document.getElementById("lastName").value = "";
+      }
+    }
+  } catch {
+    alert("No details found. Please fill manually.");
+  }
+};
+
