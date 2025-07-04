@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JNU SIS Citation Generator</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f8fa url('mmaj.jpeg') center/cover no-repeat fixed;
+      min-height: 100vh;
+    }
+    .container-main {
+      background: rgba(255,255,255,0.92);
+      border-radius: 18px;
+      box-shadow: 0 0 16px 4px #2346c230;
+      max-width: 940px;
+      margin: 2rem auto 1.5rem auto;
+      padding: 2.3rem 2.3rem 1.2rem 2.3rem;
+      position: relative;
+    }
+    .app-title {
+      text-align: center;
+      color: #2353c2;
+      font-size: 2.25rem;
+      font-weight: bold;
+      margin-bottom: .6rem;
+      margin-top: 0;
+      letter-spacing: 0.01em;
+    }
+    .sis-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 0.7rem;
+      flex-wrap: wrap;
+    }
+    .sis-col {
+      flex: 1 1 220px;
+      min-width: 210px;
+    }
+    .form-label {
+      font-weight: 500;
+      font-size: 1em;
+      color: #224;
+    }
+    .form-control, .form-select {
+      background: #f7fbff;
+      border-radius: 7px;
+      border: 1.1px solid #e0e7ef;
+      font-size: 1.06em;
+    }
+    .form-control:focus, .form-select:focus { border-color: #2353c2; box-shadow:0 0 0 1.5px #c0d8ff88;}
+    .input-group>.form-control { border-right:0;border-top-right-radius:0;border-bottom-right-radius:0; }
+    .input-group>.btn { border-top-left-radius:0;border-bottom-left-radius:0;}
+    .btn-main {
+      background: #2353c2;
+      color: #fff;
+      font-weight: 600;
+      padding: .53em 2em;
+      font-size: 1.07em;
+      border-radius: 7px;
+      border: none;
+      box-shadow: 0 2px 10px #b6c1df20;
+      transition: background 0.2s;
+    }
+    .btn-main:hover { background: #152a67;}
+    #outputCitation {
+      background: #f3f8ff;
+      border-left: 4px solid #2353c2;
+      border-radius: 8px;
+      margin-top: 1.4rem;
+      padding: 1rem 1.1rem;
+      font-size: 1.14rem;
+      min-height: 34px;
+      white-space: pre-wrap;
+    }
+    .disclaimer {
+      margin:2rem auto 0 auto;
+      text-align:center;
+      max-width:600px;
+      font-size:1em;
+      opacity:0.95;
+      padding-bottom: 1.8rem;
+      color:#fff;
+      text-shadow: 0 1px 6px #00377b70;
+    }
+    a { color:#d9e2fa; }
+    a:hover { text-decoration: underline;}
+    /* MOBILE FRIENDLY CSS */
+    @media (max-width:700px) {
+      .container-main, .container {
+        padding: .7em .2em 1.2em .2em !important;
+        min-width: unset;
+      }
+      .sis-row {
+        flex-direction: column !important;
+        gap: .1em !important;
+        margin-bottom: 0.5em !important;
+      }
+      .sis-col, .col, .col-full {
+        min-width: 0 !important;
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        margin-bottom: 0.2em !important;
+      }
+      .form-label, label {
+        font-size: .96em !important;
+      }
+      .app-title, h1, h3 {
+        font-size: 1.25rem !important;
+      }
+      #outputCitation, #output {
+        font-size: 1.02rem !important;
+        padding: .6em .6em !important;
+      }
+      .btn, .btn-main {
+        padding: .45em 1em !important;
+        font-size: 1em !important;
+      }
+    }
+    @media (max-width:500px) {
+      .container-main, .container {
+        padding: .5em .03em .9em .03em !important;
+      }
+      .app-title, h1, h3 {
+        font-size: 1.05rem !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-main shadow-lg">
+    <div class="app-title">JNU SIS Citation Generator</div>
+    <div id="sis-citation"></div>
+  </div>
+  <div class="disclaimer" style="color:#fff;">
+    This page has been designed solely on a voluntary basis. JMI or JNU does not endorse it officially.<br>
+    Your feedback is welcome at Instagram <b>@rawearthlenses</b>.<br>
+    <span style="font-size:0.99em;opacity:.95;">User is solely responsible for any mishappening while using this page.</span>
+  </div>
+  <script src="sis.js"></script>
+</body>
+</html>
