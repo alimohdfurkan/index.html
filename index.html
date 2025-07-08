@@ -12,6 +12,30 @@
       background: #f7f8fa url('mmaj.jpeg') center/cover no-repeat fixed;
       min-height: 100vh;
     }
+    .top-nav-btn {
+      display: flex;
+      justify-content: flex-end;
+      padding: 1.2rem 2rem 0 0;
+    }
+    .btn-nav {
+      background: #f3f7ff;
+      color: #2353c2;
+      border-radius: 7px;
+      border: 1px solid #2353c2;
+      font-weight: 600;
+      font-size: 1.07em;
+      padding: .45em 1.4em;
+      box-shadow: 0 1px 8px #b6c1df20;
+      transition: background 0.18s, color 0.18s;
+      text-decoration: none;
+      margin-bottom: 12px;
+    }
+    .btn-nav:hover {
+      background: #2353c2;
+      color: #fff;
+      text-decoration: none;
+    }
+    /* (Rest of your CSS unchanged) */
     .container-main {
       background: rgba(255,255,255,0.92);
       border-radius: 18px;
@@ -30,107 +54,39 @@
       margin-top: 0;
       letter-spacing: 0.01em;
     }
-    .sis-row {
-      display: flex;
-      gap: 1.5rem;
-      margin-bottom: 0.7rem;
-      flex-wrap: wrap;
-    }
-    .sis-col {
-      flex: 1 1 220px;
-      min-width: 210px;
-    }
-    .form-label {
-      font-weight: 500;
-      font-size: 1em;
-      color: #224;
-    }
-    .form-control, .form-select {
-      background: #f7fbff;
-      border-radius: 7px;
-      border: 1.1px solid #e0e7ef;
-      font-size: 1.06em;
-    }
+    .sis-row { display: flex; gap: 1.5rem; margin-bottom: 0.7rem; flex-wrap: wrap; }
+    .sis-col { flex: 1 1 220px; min-width: 210px; }
+    .form-label { font-weight: 500; font-size: 1em; color: #224; }
+    .form-control, .form-select { background: #f7fbff; border-radius: 7px; border: 1.1px solid #e0e7ef; font-size: 1.06em; }
     .form-control:focus, .form-select:focus { border-color: #2353c2; box-shadow:0 0 0 1.5px #c0d8ff88;}
     .input-group>.form-control { border-right:0;border-top-right-radius:0;border-bottom-right-radius:0; }
     .input-group>.btn { border-top-left-radius:0;border-bottom-left-radius:0;}
-    .btn-main {
-      background: #2353c2;
-      color: #fff;
-      font-weight: 600;
-      padding: .53em 2em;
-      font-size: 1.07em;
-      border-radius: 7px;
-      border: none;
-      box-shadow: 0 2px 10px #b6c1df20;
-      transition: background 0.2s;
-    }
+    .btn-main { background: #2353c2; color: #fff; font-weight: 600; padding: .53em 2em; font-size: 1.07em; border-radius: 7px; border: none; box-shadow: 0 2px 10px #b6c1df20; transition: background 0.2s;}
     .btn-main:hover { background: #152a67;}
-    #outputCitation {
-      background: #f3f8ff;
-      border-left: 4px solid #2353c2;
-      border-radius: 8px;
-      margin-top: 1.4rem;
-      padding: 1rem 1.1rem;
-      font-size: 1.14rem;
-      min-height: 34px;
-      white-space: pre-wrap;
-    }
-    .disclaimer {
-      margin:2rem auto 0 auto;
-      text-align:center;
-      max-width:600px;
-      font-size:1em;
-      opacity:0.95;
-      padding-bottom: 1.8rem;
-      color:#fff;
-      text-shadow: 0 1px 6px #00377b70;
-    }
+    #outputCitation { background: #f3f8ff; border-left: 4px solid #2353c2; border-radius: 8px; margin-top: 1.4rem; padding: 1rem 1.1rem; font-size: 1.14rem; min-height: 34px; white-space: pre-wrap;}
+    .disclaimer { margin:2rem auto 0 auto; text-align:center; max-width:600px; font-size:1em; opacity:0.95; padding-bottom: 1.8rem; color:#fff; text-shadow: 0 1px 6px #00377b70;}
     a { color:#d9e2fa; }
     a:hover { text-decoration: underline;}
-    /* MOBILE FRIENDLY CSS */
     @media (max-width:700px) {
-      .container-main, .container {
-        padding: .7em .2em 1.2em .2em !important;
-        min-width: unset;
-      }
-      .sis-row {
-        flex-direction: column !important;
-        gap: .1em !important;
-        margin-bottom: 0.5em !important;
-      }
-      .sis-col, .col, .col-full {
-        min-width: 0 !important;
-        width: 100% !important;
-        flex: 1 1 100% !important;
-        margin-bottom: 0.2em !important;
-      }
-      .form-label, label {
-        font-size: .96em !important;
-      }
-      .app-title, h1, h3 {
-        font-size: 1.25rem !important;
-      }
-      #outputCitation, #output {
-        font-size: 1.02rem !important;
-        padding: .6em .6em !important;
-      }
-      .btn, .btn-main {
-        padding: .45em 1em !important;
-        font-size: 1em !important;
-      }
+      .container-main, .container { padding: .7em .2em 1.2em .2em !important; min-width: unset; }
+      .top-nav-btn { padding: .7rem .6rem 0 0; }
+      .sis-row { flex-direction: column !important; gap: .1em !important; margin-bottom: 0.5em !important; }
+      .sis-col, .col, .col-full { min-width: 0 !important; width: 100% !important; flex: 1 1 100% !important; margin-bottom: 0.2em !important; }
+      .form-label, label { font-size: .96em !important; }
+      .app-title, h1, h3 { font-size: 1.25rem !important; }
+      #outputCitation, #output { font-size: 1.02rem !important; padding: .6em .6em !important; }
+      .btn, .btn-main, .btn-nav { padding: .45em 1em !important; font-size: 1em !important; }
     }
     @media (max-width:500px) {
-      .container-main, .container {
-        padding: .5em .03em .9em .03em !important;
-      }
-      .app-title, h1, h3 {
-        font-size: 1.05rem !important;
-      }
+      .container-main, .container { padding: .5em .03em .9em .03em !important; }
+      .app-title, h1, h3 { font-size: 1.05rem !important; }
     }
   </style>
 </head>
 <body>
+  <div class="top-nav-btn">
+    <a class="btn-nav" href="regression.html">Regression Tool</a>
+  </div>
   <div class="container-main shadow-lg">
     <div class="app-title">JNU SIS Citation Generator</div>
     <div id="sis-citation"></div>
